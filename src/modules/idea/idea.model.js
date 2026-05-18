@@ -16,6 +16,7 @@ const ideaSchema = new mongoose.Schema(
         targetAudience: { type: String, require: true },
         problemStatement: { type: String, required: true },
         proposedSolution: { type: String, required: true },
+        likes: [{ type: String }],
         authorId: { type: String, required: true },    // Better Auth user id, not mongoose ObjectId
         authorName: { type: String, required: true }
     },

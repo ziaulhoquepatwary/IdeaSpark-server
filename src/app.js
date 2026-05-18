@@ -3,6 +3,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth.js";
+import ideaRouter from "./modules/idea/idea.routes.js";
 
 const app = express();
 
@@ -16,6 +17,8 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.all("/api/auth/*splat", toNodeHandler(auth))
+
+app.use("/api/ideas", ideaRouter)
 
 app.get("/", (req, res) => {
     res.send("IdeaSpark server is running successfully")
