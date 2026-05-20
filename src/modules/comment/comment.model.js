@@ -6,7 +6,8 @@ const commentSchema = new mongoose.Schema(
         content: { type: String, required: true, trim: true, },
         ideaId: { type: mongoose.Schema.Types.ObjectId, ref: "Idea", required: true, },
         authorId: { type: String, required: true, },
-        authorName: { type: String, required: true, }
+        authorName: { type: String, required: true, },
+        ideaTitle: { type: String, default: "", }
     },
     { timestamps: true }
 );
