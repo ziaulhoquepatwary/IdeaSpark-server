@@ -11,18 +11,19 @@ export const getAllIdeas = async (req, res) => {
         const search = req.query.search || "";
         const sortBy = req.query.sortBy || "createdAt";
         const order = req.query.order || "desc";
+        const category = req.query.category || "";
 
-        const filter = search
-            ? {
-                title:
-                {
-                    $regex: search,
-                    $options: "i"
-                }
-            }
-            : {};
+        const filter = {};
 
-        const total = await Idea.countDocuments();
+        if (search) {
+            filter.title = { $regex: search, $options: "i" };
+        }
+
+        if (category && category !== "All") {
+            filter.category = category;
+        }
+
+        const total = await Idea.countDocuments(filter);
         const ideas = await Idea.find(filter)
             .sort({ [sortBy]: order === "desc" ? -1 : 1 })
             .skip(skip)
@@ -30,7 +31,7 @@ export const getAllIdeas = async (req, res) => {
 
         res.json({
             success: true,
-            ideas: ideas,
+            ideas,
             pagination: {
                 total,
                 page,
@@ -38,10 +39,7 @@ export const getAllIdeas = async (req, res) => {
             },
         });
     } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: error.message
-        });
+        res.status(500).json({ success: false, message: error.message });
     }
 };
 
