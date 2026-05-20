@@ -1,8 +1,9 @@
 import { fromNodeHeaders } from "better-auth/node";
-import { auth } from "../lib/auth.js";
 
 export const requireAuth = async (req, res, next) => {
     try {
+        const auth = global.auth;
+
         const session = await auth.api.getSession({
             headers: fromNodeHeaders(req.headers),
         });
@@ -27,4 +28,4 @@ export const requireAuth = async (req, res, next) => {
             message: "Session invalid or expired.",
         });
     }
-}
+};

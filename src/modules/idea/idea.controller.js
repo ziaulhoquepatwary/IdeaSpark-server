@@ -10,7 +10,7 @@ export const getAllIdeas = async (req, res) => {
 
         const search = req.query.search || "";
         const sortBy = req.query.sortBy || "createdAt";
-        const order=req.query.order || "desc";
+        const order = req.query.order || "desc";
 
         const filter = search
             ? {
@@ -44,3 +44,46 @@ export const getAllIdeas = async (req, res) => {
         });
     }
 };
+
+export const createIdea = async (req, res) => {
+    try {
+        const body = req.body;
+
+        // tags: "AI, SaaS, Web3" → ["AI", "SaaS", "Web3"]
+        if (typeof body.tags === "string") {
+            body.tags = body.tags
+                .split(",")
+                .map((tag) => tag.trim())
+                .filter((tag) => tag.length > 0);
+        }
+
+        const parsed = ideaValidationSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return res.status(400).json({
+                success: false,
+                message: "Validation failed",
+                errors: parsed.error.flatten().fieldErrors,
+            });
+        }
+
+        const newIdea = await Idea.create({
+            ...parsed.data,
+            authorId: req.user.id,
+            authorName: req.user.name,
+            likes: [],
+        });
+
+        res.status(201).json({
+            success: true,
+            message: "Idea created successfully",
+            idea: newIdea
+        })
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
