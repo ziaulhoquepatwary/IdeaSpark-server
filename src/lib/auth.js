@@ -6,6 +6,8 @@ export const createAuth = () => {
     return betterAuth({
         database: mongodbAdapter(mongoose.connection.db),
 
+        baseURL: process.env.BETTER_AUTH_URL,
+
         session: {
             cookieCache: {
                 enabled: true,

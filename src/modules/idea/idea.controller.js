@@ -85,3 +85,136 @@ export const createIdea = async (req, res) => {
         });
     }
 }
+
+export const getMyIdeas = async (req, res) => {
+    try {
+        const ideas = await Idea.find({ authorId: req.user.id })
+            .sort({ createdAt: -1 });
+
+        res.json({
+            success: true,
+            ideas,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const getIdeaById = async (req, res) => {
+    try {
+        const idea = await Idea.findById(req.params.id);
+
+        if (!idea) {
+            return res.status(404).json({
+                success: false,
+                message: "Idea not found",
+            });
+        }
+
+        res.json({
+            success: true,
+            idea,
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const updateIdea = async (req, res) => {
+    try {
+        const idea = await Idea.findById(req.params.id);
+
+        if (!idea) {
+            return res.status(404).json({
+                success: false,
+                message: "Idea not found",
+            });
+        }
+
+        if (idea.authorId.toString() !== req.user.id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "Forbidden. You can only edit your own idea.",
+            });
+        }
+
+        const body = req.body;
+
+        if (typeof body.tags === "string") {
+            body.tags = body.tags
+                .split(",")
+                .map((tag) => tag.trim())
+                .filter((tag) => tag.length > 0);
+        }
+
+        // validation
+        const parsed = ideaValidationSchema.safeParse(body);
+
+        if (!parsed.success) {
+            return res.status(400).json({
+                success: false,
+                message: "Validation failed",
+                errors: parsed.error.flatten().fieldErrors,
+            });
+        }
+
+        const updatedIdea = await Idea.findByIdAndUpdate(
+            req.params.id,
+            parsed.data,
+            {
+                new: true,
+                runValidators: true,
+            }
+        );
+
+        res.json({
+            success: true,
+            message: "Idea updated successfully",
+            idea: updatedIdea,
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};
+
+export const deleteIdea = async (req, res) => {
+    try {
+        const idea = await Idea.findById(req.params.id);
+
+        if (!idea) {
+            return res.status(404).json({
+                success: false,
+                message: "Idea not found",
+            });
+        }
+
+        if (idea.authorId.toString() !== req.user.id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "Forbidden. You can only delete your own ideas.",
+            });
+        }
+
+        await Idea.findByIdAndDelete(req.params.id);
+
+        res.json({
+            success: true,
+            message: "Idea deleted successfully",
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+};

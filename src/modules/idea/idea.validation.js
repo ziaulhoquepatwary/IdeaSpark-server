@@ -4,13 +4,13 @@ import z from "zod";
 export const ideaValidationSchema = z.object({
     title: z
         .string({ required_error: "Title is required" })
-        .min(10, "Title must be at least 3 characters"),
+        .min(3, "Title must be at least 3 characters"),
     shortDescription: z
         .string({ required_error: "Short description is required" })
-        .min(20, "Short description must be at least 20 characters"),
+        .min(5, "Short description must be at least 5 characters"),
     detailedDescription: z
         .string({ required_error: "Detailed description is required" })
-        .min(40, "Detailed description must be at least 40 characters"),
+        .min(10, "Detailed description must be at least 10 characters"),
     category: z.enum(
         ["Tech", "Health", "AI", "Education", "Finance", "Environment", "Other"],
         { required_error: "Category is required" }
