@@ -218,3 +218,30 @@ export const deleteIdea = async (req, res) => {
         });
     }
 };
+
+export const toggleLike = async (req, res) => {
+    const idea     = await Idea.findById(req.params.id);
+    const userId   = req.user.id;
+    const hasLiked = idea.likes.includes(userId);
+
+    if (hasLiked) {
+        // Already liked → unlike
+        idea.likes = idea.likes.filter(id => id !== userId);
+    } else {
+        idea.likes.push(userId);
+    }
+
+    await idea.save();
+    res.json({ success: true, likes: idea.likes.length });
+};
+
+export const getLikedIdeas = async (req, res) => {
+    try {
+        const ideas = await Idea.find({ likes: req.user.id })
+            .sort({ createdAt: -1 });
+
+        res.json({ success: true, ideas });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
