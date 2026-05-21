@@ -1,5 +1,5 @@
 import express from "express";
-import { createIdea, deleteIdea, getAllIdeas, getMyIdeas, getIdeaById, updateIdea } from "./idea.controller.js";
+import { createIdea, deleteIdea, getAllIdeas, getMyIdeas, getIdeaById, updateIdea, getLikedIdeas, toggleLike } from "./idea.controller.js";
 import { requireAuth } from "../../middleware/requireAuth.js";
 
 
