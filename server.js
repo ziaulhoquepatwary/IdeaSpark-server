@@ -1,30 +1,26 @@
 import dotenv from "dotenv";
+dotenv.config();
 import mongoose from "mongoose";
 import { createAuth } from "./src/lib/auth.js";
 import createApp from "./src/app.js";
 
-dotenv.config();
 
 const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
     try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log("Connected to MongoDB using Mongoose!!");
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log("Database connected successfully!");
 
-        // DB connect after auth create
-        const auth = createAuth();
-        global.auth = auth; // requireAuth middleware এ ব্যবহার হবে
-
-        // send auth then create app
+        const auth = createAuth(mongoose.connection.getClient().db());
         const app = createApp(auth);
+        app.set("auth", auth);
 
         app.listen(PORT, () => {
-            console.log(`Server running at http://localhost:${PORT}`);
+            console.log(`Server is running on port ${PORT}`);
         });
-
     } catch (error) {
-        console.log("MongoDB connection failed", error);
+        console.error("Failed to start the server:", error);
     }
 };
 

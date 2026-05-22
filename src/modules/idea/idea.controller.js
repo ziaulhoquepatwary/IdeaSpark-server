@@ -168,7 +168,7 @@ export const updateIdea = async (req, res) => {
             req.params.id,
             parsed.data,
             {
-                new: true,
+                returnDocument: "after",
                 runValidators: true,
             }
         );

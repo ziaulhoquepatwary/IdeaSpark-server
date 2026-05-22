@@ -9,7 +9,10 @@ const createApp = (auth) => {
     const app = express();
 
     app.use(cors({
-        origin: "http://localhost:3000",
+        origin: [
+            process.env.FRONTEND_URL,
+            "http://localhost:3000",
+        ].filter(Boolean),
         credentials: true
     }));
 
@@ -19,7 +22,7 @@ const createApp = (auth) => {
     app.all("/api/auth/*splat", toNodeHandler(auth));
 
     app.use("/api/ideas", ideaRouter);
-    app.use("/api/comments", commentRoutes)
+    app.use("/api/comments", commentRoutes);
 
     app.get("/", (req, res) => {
         res.send("IdeaSpark server is running successfully");

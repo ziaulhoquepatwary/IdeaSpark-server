@@ -4,10 +4,12 @@ import { requireAuth } from "../../middleware/requireAuth.js";
 
 const router = express.Router();
 
-router.get("/my", requireAuth, getMyComments)
+const userAuth = requireAuth()
+
+router.get("/my", userAuth, getMyComments)
 router.get("/:ideaId", getCommentsByIdea);
-router.post('/:ideaId', requireAuth, createComment);
-router.put("/:id", requireAuth, updateComment);
-router.delete("/:id", requireAuth, deleteComment);
+router.post('/:ideaId', userAuth, createComment);
+router.put("/:id", userAuth, updateComment);
+router.delete("/:id", userAuth, deleteComment);
 
 export default router;

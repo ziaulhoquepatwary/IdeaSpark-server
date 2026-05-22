@@ -2,11 +2,17 @@ import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import mongoose from "mongoose";
 
-export const createAuth = () => {
-    return betterAuth({
-        database: mongodbAdapter(mongoose.connection.db),
+export const createAuth = (db) => {
 
-        baseURL: process.env.BETTER_AUTH_URL,
+    const origins = [
+        process.env.FRONTEND_URL,
+        "http://localhost:3000"
+    ]
+    
+    return betterAuth({
+        database: mongodbAdapter(db),
+
+        baseURL: process.env.BETTER_AUTH_URL || "http://localhost:5000",
 
         session: {
             cookieCache: {
@@ -17,8 +23,8 @@ export const createAuth = () => {
 
         advanced: {
             defaultCookieAttributes: {
-                sameSite: "lax",
-                secure: false,
+                sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+                secure: process.env.NODE_ENV === "production" ? true : false,
                 httpOnly: true,
             }
         },
@@ -32,6 +38,6 @@ export const createAuth = () => {
             },
         },
 
-        trustedOrigins: ["http://localhost:3000"]
+        trustedOrigins: origins
     });
 };
